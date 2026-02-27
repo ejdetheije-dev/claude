@@ -1,0 +1,318 @@
+/* === Reset & Base === */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --color-bg: #fafafa;
+    --color-surface: #ffffff;
+    --color-text: #2d2d2d;
+    --color-text-light: #6b6b6b;
+    --color-primary: #2563eb;
+    --color-primary-dark: #1d4ed8;
+    --color-border: #e5e7eb;
+    --color-tag-bg: #eff6ff;
+    --color-tag-text: #1e40af;
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-serif: Georgia, 'Times New Roman', serif;
+    --max-width: 720px;
+    --space-xs: 0.25rem;
+    --space-sm: 0.5rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --space-2xl: 3rem;
+}
+
+body {
+    font-family: var(--font-sans);
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    line-height: 1.7;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 var(--space-lg);
+    width: 100%;
+}
+
+/* === Header === */
+header {
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    padding: var(--space-xl) 0;
+    margin-bottom: var(--space-2xl);
+}
+
+header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: var(--space-xs);
+}
+
+header h1 a {
+    color: var(--color-text);
+    text-decoration: none;
+}
+
+header h1 a:hover {
+    color: var(--color-primary);
+}
+
+.tagline {
+    color: var(--color-text-light);
+    font-size: 0.95rem;
+    margin-bottom: var(--space-md);
+}
+
+nav {
+    display: flex;
+    gap: var(--space-lg);
+}
+
+nav a {
+    color: var(--color-text-light);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding-bottom: 2px;
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+nav a:hover,
+nav a.active {
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+}
+
+/* === Main Content === */
+main {
+    flex: 1;
+}
+
+/* === Blog Post Card === */
+.post-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: var(--space-xl);
+    margin-bottom: var(--space-lg);
+    transition: box-shadow 0.2s;
+}
+
+.post-card:hover {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.post-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-sm);
+    font-size: 0.85rem;
+    color: var(--color-text-light);
+}
+
+.post-date {
+    font-weight: 500;
+}
+
+.post-card h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-bottom: var(--space-sm);
+    line-height: 1.3;
+}
+
+.post-card h2 a {
+    color: var(--color-text);
+    text-decoration: none;
+}
+
+.post-card h2 a:hover {
+    color: var(--color-primary);
+}
+
+.post-excerpt {
+    color: var(--color-text-light);
+    margin-bottom: var(--space-md);
+    line-height: 1.6;
+}
+
+.post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+}
+
+.tag {
+    background: var(--color-tag-bg);
+    color: var(--color-tag-text);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.read-more {
+    display: inline-block;
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.read-more:hover {
+    text-decoration: underline;
+}
+
+/* === Full Post Page === */
+.post-full {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: var(--space-2xl);
+}
+
+.post-full h2 {
+    font-size: 1.75rem;
+    margin-bottom: var(--space-sm);
+}
+
+.post-full .post-meta {
+    margin-bottom: var(--space-xl);
+}
+
+.post-content {
+    font-family: var(--font-serif);
+    font-size: 1.05rem;
+}
+
+.post-content p {
+    margin-bottom: var(--space-lg);
+}
+
+.post-content h3 {
+    font-family: var(--font-sans);
+    font-size: 1.2rem;
+    margin-top: var(--space-xl);
+    margin-bottom: var(--space-md);
+}
+
+.post-content ul,
+.post-content ol {
+    margin-bottom: var(--space-lg);
+    padding-left: var(--space-xl);
+}
+
+.post-content li {
+    margin-bottom: var(--space-sm);
+}
+
+.post-content code {
+    background: #f3f4f6;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.9em;
+}
+
+.post-content blockquote {
+    border-left: 3px solid var(--color-primary);
+    padding-left: var(--space-lg);
+    color: var(--color-text-light);
+    margin-bottom: var(--space-lg);
+    font-style: italic;
+}
+
+.back-link {
+    display: inline-block;
+    margin-bottom: var(--space-xl);
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+/* === About Page === */
+.about-page {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: var(--space-2xl);
+}
+
+.about-page h2 {
+    font-size: 1.5rem;
+    margin-bottom: var(--space-lg);
+}
+
+.about-page h3 {
+    font-size: 1.15rem;
+    margin-top: var(--space-xl);
+    margin-bottom: var(--space-sm);
+}
+
+.about-page p {
+    margin-bottom: var(--space-md);
+    color: var(--color-text-light);
+}
+
+.about-page ul {
+    list-style: none;
+    margin-bottom: var(--space-md);
+}
+
+.about-page ul li {
+    padding: var(--space-sm) 0;
+    color: var(--color-text-light);
+}
+
+/* === Footer === */
+footer {
+    margin-top: var(--space-2xl);
+    padding: var(--space-xl) 0;
+    border-top: 1px solid var(--color-border);
+    text-align: center;
+}
+
+footer p {
+    color: var(--color-text-light);
+    font-size: 0.85rem;
+}
+
+/* === Responsive === */
+@media (max-width: 600px) {
+    header {
+        padding: var(--space-lg) 0;
+        margin-bottom: var(--space-xl);
+    }
+
+    header h1 {
+        font-size: 1.4rem;
+    }
+
+    .post-card {
+        padding: var(--space-lg);
+    }
+
+    .post-full {
+        padding: var(--space-lg);
+    }
+
+    .post-full h2 {
+        font-size: 1.35rem;
+    }
+}

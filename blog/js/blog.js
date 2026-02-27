@@ -31,15 +31,9 @@ const posts = [
         date: "2026-02-27",
         author: "Blog Auteur",
         tags: ["voorschoten", "weetjes", "tradities"],
-        excerpt: "Wist je dat er in de zomermaanden een paardenmarkt is in Voorschoten? Ontdek dit en meer leuke weetjes!",
+        excerpt: "Wist je dat in de zomermaanden er een paardenmarkt is in Voorschoten? Het hele dorp is dan 2 dagen bezig met een ouderwetse paardenmarkt en zelfs met een heuse paardenrace (op duinzand).",
         content: `
-            <p>Wist je dat in de zomermaanden er een paardenmarkt is in Voorschoten? Het hele dorp is dan 2 dagen bezig met een ouderwetse paardenmarkt en zelfs met een heuse paardenrace (op duinzand).</p>
-
-            <h3>Een bijzondere traditie</h3>
-            <p>De paardenmarkt van Voorschoten is een evenement waar het hele dorp naar uitkijkt. Twee dagen lang wordt het centrum omgetoverd tot een gezellige markt waar alles in het teken staat van paarden.</p>
-
-            <h3>De paardenrace</h3>
-            <p>Het hoogtepunt is zonder twijfel de paardenrace op duinzand. Een uniek spektakel dat je nergens anders zo ziet!</p>
+            <p>Wist je dat in de zomermaanden er een paardenmarkt is in Voorschoten. Het hele dorp is dan 2 dagen bezig met een ouderwetse paardenmarkt en zelfs met een heuse paardenrace (op duinzand).</p>
         `
     }
 ];

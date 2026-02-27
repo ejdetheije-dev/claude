@@ -140,7 +140,7 @@ function renderPost() {
         return;
     }
 
-    document.title = `${post.title} - Mijn Blog`;
+    document.title = `${post.title} - Blog van Evert`;
 
     container.innerHTML = `
         <a href="index.html" class="back-link">&larr; Terug naar alle posts</a>

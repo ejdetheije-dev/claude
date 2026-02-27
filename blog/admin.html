@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Blog van Evert</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .admin-panel {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: var(--space-2xl);
+            margin-bottom: var(--space-lg);
+        }
+
+        .admin-panel h2 {
+            font-size: 1.5rem;
+            margin-bottom: var(--space-lg);
+        }
+
+        .form-group {
+            margin-bottom: var(--space-lg);
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: var(--space-sm);
+            font-size: 0.9rem;
+        }
+
+        .form-group small {
+            display: block;
+            color: var(--color-text-light);
+            font-size: 0.8rem;
+            margin-top: var(--space-xs);
+        }
+
+        input[type="text"],
+        input[type="password"],
+        textarea {
+            width: 100%;
+            padding: 0.6rem 0.8rem;
+            border: 1px solid var(--color-border);
+            border-radius: 6px;
+            font-family: var(--font-sans);
+            font-size: 0.95rem;
+            color: var(--color-text);
+            background: var(--color-bg);
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--color-primary);
+        }
+
+        textarea {
+            min-height: 200px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.6rem 1.4rem;
+            border: none;
+            border-radius: 6px;
+            font-family: var(--font-sans);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, opacity 0.2s;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--color-primary-dark);
+        }
+
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: #b91c1c;
+        }
+
+        .btn-secondary {
+            background: var(--color-border);
+            color: var(--color-text);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #d1d5db;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: var(--space-sm);
+            flex-wrap: wrap;
+        }
+
+        .login-section {
+            max-width: 400px;
+        }
+
+        .post-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-md) 0;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .post-list-item:last-child {
+            border-bottom: none;
+        }
+
+        .post-list-item .post-info h3 {
+            font-size: 1rem;
+            margin-bottom: var(--space-xs);
+        }
+
+        .post-list-item .post-info .post-date {
+            font-size: 0.8rem;
+            color: var(--color-text-light);
+        }
+
+        .message {
+            padding: var(--space-md);
+            border-radius: 6px;
+            margin-bottom: var(--space-lg);
+            font-size: 0.9rem;
+        }
+
+        .message-success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .message-error {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loading {
+            color: var(--color-text-light);
+            font-style: italic;
+        }
+
+        @media (max-width: 600px) {
+            .post-list-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--space-sm);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1><a href="index.html">Blog van Evert</a></h1>
+            <p class="tagline">Admin paneel</p>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="over.html">Over</a>
+                <a href="admin.html" class="active">Admin</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div id="message-area"></div>
+
+        <!-- Login sectie -->
+        <div id="login-section" class="admin-panel login-section">
+            <h2>Inloggen</h2>
+            <p style="color: var(--color-text-light); margin-bottom: var(--space-lg); font-size: 0.9rem;">
+                Voer je GitHub Personal Access Token in om posts te beheren.
+            </p>
+            <div class="form-group">
+                <label for="github-token">GitHub Token</label>
+                <input type="password" id="github-token" placeholder="ghp_xxxxxxxxxxxx">
+                <small>Je token wordt alleen in deze browsersessie bewaard.</small>
+            </div>
+            <button class="btn btn-primary" onclick="login()">Inloggen</button>
+        </div>
+
+        <!-- Admin dashboard -->
+        <div id="admin-dashboard" class="hidden">
+            <!-- Bestaande posts -->
+            <div class="admin-panel">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-lg);">
+                    <h2 style="margin-bottom: 0;">Blogposts</h2>
+                    <button class="btn btn-primary" onclick="showNewPostForm()">+ Nieuwe post</button>
+                </div>
+                <div id="posts-list">
+                    <p class="loading">Posts laden...</p>
+                </div>
+            </div>
+
+            <!-- Nieuw/bewerk formulier -->
+            <div id="post-form-section" class="admin-panel hidden">
+                <h2 id="form-title">Nieuwe post</h2>
+                <input type="hidden" id="edit-post-id">
+                <div class="form-group">
+                    <label for="post-title">Titel</label>
+                    <input type="text" id="post-title" placeholder="Titel van je blogpost">
+                </div>
+                <div class="form-group">
+                    <label for="post-tags">Tags</label>
+                    <input type="text" id="post-tags" placeholder="tag1, tag2, tag3">
+                    <small>Gescheiden door komma's.</small>
+                </div>
+                <div class="form-group">
+                    <label for="post-excerpt">Samenvatting</label>
+                    <input type="text" id="post-excerpt" placeholder="Korte samenvatting voor op de homepage">
+                </div>
+                <div class="form-group">
+                    <label for="post-content">Inhoud</label>
+                    <textarea id="post-content" placeholder="De volledige tekst van je blogpost. Elke alinea wordt automatisch in een <p> tag gezet."></textarea>
+                    <small>Schrijf gewoon tekst. Lege regels maken nieuwe alinea's.</small>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="savePost()" id="save-btn">Publiceren</button>
+                    <button class="btn btn-secondary" onclick="cancelEdit()">Annuleren</button>
+                </div>
+            </div>
+
+            <button class="btn btn-secondary" onclick="logout()" style="margin-top: var(--space-md);">Uitloggen</button>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Blog van Evert. Gehost op GitHub Pages.</p>
+        </div>
+    </footer>
+
+    <script>
+        const REPO_OWNER = 'ejdetheije-dev';
+        const REPO_NAME = 'claude';
+        const FILE_PATH = 'blog/js/blog.js';
+        const BRANCH = 'claude/create-web-blog-cloud-wAcJZ';
+
+        let token = '';
+        let currentPosts = [];
+        let fileSha = '';
+
+        // --- Login / Logout ---
+
+        function login() {
+            token = document.getElementById('github-token').value.trim();
+            if (!token) {
+                showMessage('Voer een GitHub token in.', 'error');
+                return;
+            }
+            sessionStorage.setItem('gh_token', token);
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('admin-dashboard').classList.remove('hidden');
+            loadPosts();
+        }
+
+        function logout() {
+            token = '';
+            sessionStorage.removeItem('gh_token');
+            document.getElementById('admin-dashboard').classList.add('hidden');
+            document.getElementById('login-section').classList.remove('hidden');
+            document.getElementById('github-token').value = '';
+        }
+
+        // --- Berichten ---
+
+        function showMessage(text, type) {
+            const area = document.getElementById('message-area');
+            area.innerHTML = `<div class="message message-${type}">${text}</div>`;
+            setTimeout(() => { area.innerHTML = ''; }, 5000);
+        }
+
+        // --- Posts laden ---
+
+        async function loadPosts() {
+            const listEl = document.getElementById('posts-list');
+            listEl.innerHTML = '<p class="loading">Posts laden...</p>';
+
+            try {
+                const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}?ref=${BRANCH}`, {
+                    headers: { 'Authorization': `token ${token}` }
+                });
+
+                if (!res.ok) {
+                    if (res.status === 401) {
+                        showMessage('Ongeldig token. Controleer je GitHub token.', 'error');
+                        logout();
+                        return;
+                    }
+                    throw new Error(`GitHub API fout: ${res.status}`);
+                }
+
+                const data = await res.json();
+                fileSha = data.sha;
+
+                const content = atob(data.content.replace(/\n/g, ''));
+                currentPosts = parsePostsFromJS(content);
+                renderPostList();
+            } catch (err) {
+                listEl.innerHTML = `<p style="color: #991b1b;">Fout bij laden: ${err.message}</p>`;
+            }
+        }
+
+        function parsePostsFromJS(jsContent) {
+            const match = jsContent.match(/const posts = \[([\s\S]*?)\];/);
+            if (!match) return [];
+
+            try {
+                const fn = new Function(`return [${match[1]}];`);
+                return fn();
+            } catch (e) {
+                console.error('Parse error:', e);
+                return [];
+            }
+        }
+
+        function renderPostList() {
+            const listEl = document.getElementById('posts-list');
+            if (currentPosts.length === 0) {
+                listEl.innerHTML = '<p style="color: var(--color-text-light);">Geen posts gevonden.</p>';
+                return;
+            }
+
+            const sorted = [...currentPosts].sort((a, b) => new Date(b.date) - new Date(a.date));
+            listEl.innerHTML = sorted.map(post => `
+                <div class="post-list-item">
+                    <div class="post-info">
+                        <h3>${post.title}</h3>
+                        <span class="post-date">${post.date} &middot; ${post.tags.join(', ')}</span>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-secondary" onclick="editPost(${post.id})">Bewerken</button>
+                        <button class="btn btn-danger" onclick="deletePost(${post.id})">Verwijderen</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // --- Post formulier ---
+
+        function showNewPostForm() {
+            document.getElementById('form-title').textContent = 'Nieuwe post';
+            document.getElementById('edit-post-id').value = '';
+            document.getElementById('post-title').value = '';
+            document.getElementById('post-tags').value = '';
+            document.getElementById('post-excerpt').value = '';
+            document.getElementById('post-content').value = '';
+            document.getElementById('save-btn').textContent = 'Publiceren';
+            document.getElementById('post-form-section').classList.remove('hidden');
+        }
+
+        function editPost(id) {
+            const post = currentPosts.find(p => p.id === id);
+            if (!post) return;
+
+            document.getElementById('form-title').textContent = 'Post bewerken';
+            document.getElementById('edit-post-id').value = id;
+            document.getElementById('post-title').value = post.title;
+            document.getElementById('post-tags').value = post.tags.join(', ');
+            document.getElementById('post-excerpt').value = post.excerpt;
+
+            // Strip HTML tags for editing
+            const plainContent = post.content
+                .replace(/<p>/g, '')
+                .replace(/<\/p>/g, '\n')
+                .replace(/<[^>]+>/g, '')
+                .trim();
+            document.getElementById('post-content').value = plainContent;
+
+            document.getElementById('save-btn').textContent = 'Opslaan';
+            document.getElementById('post-form-section').classList.remove('hidden');
+        }
+
+        function cancelEdit() {
+            document.getElementById('post-form-section').classList.add('hidden');
+        }
+
+        // --- Post opslaan ---
+
+        async function savePost() {
+            const title = document.getElementById('post-title').value.trim();
+            const tags = document.getElementById('post-tags').value.split(',').map(t => t.trim()).filter(t => t);
+            const excerpt = document.getElementById('post-excerpt').value.trim();
+            const rawContent = document.getElementById('post-content').value.trim();
+            const editId = document.getElementById('edit-post-id').value;
+
+            if (!title || !rawContent) {
+                showMessage('Vul minstens een titel en inhoud in.', 'error');
+                return;
+            }
+
+            // Convert plain text to HTML paragraphs
+            const htmlContent = rawContent
+                .split(/\n\s*\n/)
+                .map(p => p.trim())
+                .filter(p => p)
+                .map(p => `            <p>${p}</p>`)
+                .join('\n\n');
+
+            const today = new Date().toISOString().split('T')[0];
+
+            if (editId) {
+                // Bewerken
+                const id = parseInt(editId);
+                const post = currentPosts.find(p => p.id === id);
+                if (post) {
+                    post.title = title;
+                    post.tags = tags;
+                    post.excerpt = excerpt || rawContent.substring(0, 150) + '...';
+                    post.content = `\n${htmlContent}\n        `;
+                }
+            } else {
+                // Nieuwe post
+                const maxId = currentPosts.reduce((max, p) => Math.max(max, p.id), 0);
+                currentPosts.push({
+                    id: maxId + 1,
+                    title: title,
+                    date: today,
+                    author: 'Blog Auteur',
+                    tags: tags,
+                    excerpt: excerpt || rawContent.substring(0, 150) + '...',
+                    content: `\n${htmlContent}\n        `
+                });
+            }
+
+            await pushToGitHub(editId ? `Post "${title}" bijgewerkt` : `Nieuwe post: "${title}"`);
+        }
+
+        // --- Post verwijderen ---
+
+        async function deletePost(id) {
+            const post = currentPosts.find(p => p.id === id);
+            if (!post) return;
+
+            if (!confirm(`Weet je zeker dat je "${post.title}" wilt verwijderen?`)) return;
+
+            currentPosts = currentPosts.filter(p => p.id !== id);
+            await pushToGitHub(`Post "${post.title}" verwijderd`);
+        }
+
+        // --- GitHub push ---
+
+        function generateBlogJS() {
+            const postsStr = currentPosts.map(post => {
+                const tagsStr = post.tags.map(t => `"${t}"`).join(', ');
+                return `    {
+        id: ${post.id},
+        title: "${post.title.replace(/"/g, '\\"')}",
+        date: "${post.date}",
+        author: "${post.author}",
+        tags: [${tagsStr}],
+        excerpt: "${post.excerpt.replace(/"/g, '\\"')}",
+        content: \`${post.content}\`
+    }`;
+            }).join(',\n');
+
+            return `// Blog posts data
+const posts = [
+${postsStr}
+];
+
+// Format date to Dutch locale
+function formatDate(dateStr) {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('nl-NL', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+}
+
+// Render post cards on the home page
+function renderPostList() {
+    const container = document.getElementById('blog-posts');
+    if (!container) return;
+
+    const html = posts
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .map(post => \`
+            <article class="post-card">
+                <div class="post-meta">
+                    <span class="post-date">\${formatDate(post.date)}</span>
+                    <span>&middot;</span>
+                    <span>\${post.author}</span>
+                </div>
+                <h2><a href="post.html?id=\${post.id}">\${post.title}</a></h2>
+                <p class="post-excerpt">\${post.excerpt}</p>
+                <div class="post-tags">
+                    \${post.tags.map(tag => \`<span class="tag">\${tag}</span>\`).join('')}
+                </div>
+            </article>
+        \`)
+        .join('');
+
+    container.innerHTML = html;
+}
+
+// Render a single post on the post page
+function renderPost() {
+    const container = document.getElementById('post-content');
+    if (!container) return;
+
+    const params = new URLSearchParams(window.location.search);
+    const postId = parseInt(params.get('id'));
+    const post = posts.find(p => p.id === postId);
+
+    if (!post) {
+        container.innerHTML = \`
+            <p>Post niet gevonden.</p>
+            <a href="index.html" class="back-link">&larr; Terug naar home</a>
+        \`;
+        return;
+    }
+
+    document.title = \`\${post.title} - Blog van Evert\`;
+
+    container.innerHTML = \`
+        <a href="index.html" class="back-link">&larr; Terug naar alle posts</a>
+        <article class="post-full">
+            <h2>\${post.title}</h2>
+            <div class="post-meta">
+                <span class="post-date">\${formatDate(post.date)}</span>
+                <span>&middot;</span>
+                <span>\${post.author}</span>
+            </div>
+            <div class="post-tags" style="margin-bottom: 1.5rem;">
+                \${post.tags.map(tag => \`<span class="tag">\${tag}</span>\`).join('')}
+            </div>
+            <div class="post-content">
+                \${post.content}
+            </div>
+        </article>
+    \`;
+}
+
+// Initialize the correct view
+document.addEventListener('DOMContentLoaded', () => {
+    renderPostList();
+    renderPost();
+});
+`;
+        }
+
+        async function pushToGitHub(commitMessage) {
+            const saveBtn = document.getElementById('save-btn');
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Bezig...';
+
+            try {
+                const newContent = generateBlogJS();
+                const encoded = btoa(unescape(encodeURIComponent(newContent)));
+
+                const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: commitMessage,
+                        content: encoded,
+                        sha: fileSha,
+                        branch: BRANCH
+                    })
+                });
+
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.message || `Fout: ${res.status}`);
+                }
+
+                const data = await res.json();
+                fileSha = data.content.sha;
+
+                showMessage('Gepubliceerd! De wijziging is live na een paar seconden.', 'success');
+                cancelEdit();
+                renderPostList();
+            } catch (err) {
+                showMessage(`Fout bij publiceren: ${err.message}`, 'error');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Publiceren';
+            }
+        }
+
+        // --- Init ---
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedToken = sessionStorage.getItem('gh_token');
+            if (savedToken) {
+                token = savedToken;
+                document.getElementById('login-section').classList.add('hidden');
+                document.getElementById('admin-dashboard').classList.remove('hidden');
+                loadPosts();
+            }
+        });
+    </script>
+</body>
+</html>
